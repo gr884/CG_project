@@ -5,9 +5,9 @@ import java.awt.event.*;
 
 public class LineDrawing extends Canvas {
 
-    private int x1, y1, x2, y2;
-    private boolean firstPoint = true;
-    private boolean lineDrawn = false;
+    private int x1, y1, x2, y2;	// 각 좌표
+    private boolean firstPoint = true;	// 시작 지점 마킹
+    private boolean lineDrawn = false;	// 끝 지점 마킹
 
     public LineDrawing()	// 생성자
     {
@@ -17,17 +17,17 @@ public class LineDrawing extends Canvas {
             {
                 if (firstPoint)	// 첫 번째 지점 입력이라면
                 {
-                    x1 = e.getX();	// x1 설정
-                    y1 = e.getY();	// y1 설정
+                    x1 = e.getX();		// x1 설정
+                    y1 = e.getY();		// y1 설정
                     firstPoint = false;	// 다음 지점으로
                 } 
                 else	// 두 번째 지점 입력이라면
                 {
-                    x2 = e.getX();	// x2 설정
-                    y2 = e.getY();	// y2 설정
+                    x2 = e.getX();		// x2 설정
+                    y2 = e.getY();		// y2 설정
                     firstPoint = true;	// 다음 클릭은 첫 번째
                     lineDrawn = true;	// 선 그려짐 표현
-                    repaint();
+                    repaint();			// 두 번째 지점까지 다시 그려주기
                 }
             }
         });
@@ -41,16 +41,16 @@ public class LineDrawing extends Canvas {
                     switch (e.getKeyCode())	// 키 입력에 따라 상하좌우 이동
                     {
                         case KeyEvent.VK_UP:
-                            translateLine(0, -10);
+                            translate(0, -10);
                             break;
                         case KeyEvent.VK_DOWN:
-                            translateLine(0, 10);
+                            translate(0, 10);
                             break;
                         case KeyEvent.VK_LEFT:
-                            translateLine(-10, 0);
+                            translate(-10, 0);
                             break;
                         case KeyEvent.VK_RIGHT:
-                            translateLine(10, 0);
+                            translate(10, 0);
                             break;
                     }
                 }
@@ -60,9 +60,9 @@ public class LineDrawing extends Canvas {
         setFocusable(true);	// 해당 패널에 포커스가 잡히도록
     }
 
-    public void paint(Graphics g)	// 그리기
+    public void paint(Graphics g)	// 그리기 수행
     {
-        if (lineDrawn)	// 선이 그려진 상태(입력이 모두 된 상태)라면
+        if (lineDrawn)	// 입력이 모두 된 상태라면
             drawMidpointLine(g, x1, y1, x2, y2);	// 함수 수행해서 선 그리기
     }
 
@@ -73,9 +73,9 @@ public class LineDrawing extends Canvas {
         int d = dy - (dx / 2);	// 비교용 d 설정
         int x = x1, y = y1;	// x, y의 시작점을 설정
 
-        g.fillOval(x, y, 2, 2);
+        g.fillOval(x, y, 2, 2);	// 해당 위치에 작은 타원 생성
 
-        while (x < x2)	// x가 x2 까지 도달
+        while (x < x2)	// x가 x2 까지 도달할 때 까지
         {
             x++;	// x +1
             if (d < 0)	// d가 0보다 작으면
@@ -89,7 +89,7 @@ public class LineDrawing extends Canvas {
         }
     }
 
-    private void translateLine(int dx, int dy)	// 이동 함수
+    private void translate(int dx, int dy)	// 이동 함수
     {
         x1 += dx;	// x1을 dx만큼 이동
         y1 += dy;	// y1을 dy만큼 이동
@@ -99,12 +99,12 @@ public class LineDrawing extends Canvas {
     }
 
     public static void main(String[] args) {
-        Frame frame = new Frame("Line Drawing");
-        LineDrawing canvas = new LineDrawing();
+        Frame frame = new Frame("Line Drawing");	// 프레임 생성
+        LineDrawing canvas = new LineDrawing();		// 그려질 캔버스 생성
 
-        frame.add(canvas);
-        frame.setSize(800, 600);
-        frame.addWindowListener(new WindowAdapter() 
+        frame.add(canvas);	// 프레임에 캔버스 추가
+        frame.setSize(800, 600);	// 크기 설정
+        frame.addWindowListener(new WindowAdapter()	// 프레임에 창 닫으면 종료 과정 추가 
         {
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
