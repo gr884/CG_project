@@ -1,0 +1,116 @@
+package Drawing;
+
+import java.awt.*;
+import java.awt.event.*;
+
+public class LineDrawing extends Canvas {
+
+    private int x1, y1, x2, y2;
+    private boolean firstPoint = true;
+    private boolean lineDrawn = false;
+
+    public LineDrawing()	// 생성자
+    {
+        addMouseListener(new MouseAdapter() // 마우스리스너 추가
+        {
+            public void mouseClicked(MouseEvent e)	// 클릭 이벤트 설정
+            {
+                if (firstPoint)	// 첫 번째 지점 입력이라면
+                {
+                    x1 = e.getX();	// x1 설정
+                    y1 = e.getY();	// y1 설정
+                    firstPoint = false;	// 다음 지점으로
+                } 
+                else	// 두 번째 지점 입력이라면
+                {
+                    x2 = e.getX();	// x2 설정
+                    y2 = e.getY();	// y2 설정
+                    firstPoint = true;	// 다음 클릭은 첫 번째
+                    lineDrawn = true;	// 선 그려짐 표현
+                    repaint();
+                }
+            }
+        });
+
+        addKeyListener(new KeyAdapter()	// 키보드리스너 추가
+        {
+            public void keyPressed(KeyEvent e)	// 키 입력에 따라
+            {
+                if (lineDrawn)	// 선이 그려진 상태라면
+                {
+                    switch (e.getKeyCode())	// 키 입력에 따라 상하좌우 이동
+                    {
+                        case KeyEvent.VK_UP:
+                            translateLine(0, -10);
+                            break;
+                        case KeyEvent.VK_DOWN:
+                            translateLine(0, 10);
+                            break;
+                        case KeyEvent.VK_LEFT:
+                            translateLine(-10, 0);
+                            break;
+                        case KeyEvent.VK_RIGHT:
+                            translateLine(10, 0);
+                            break;
+                    }
+                }
+            }
+        });
+
+        setFocusable(true);	// 해당 패널에 포커스가 잡히도록
+    }
+
+    public void paint(Graphics g)	// 그리기
+    {
+        if (lineDrawn)	// 선이 그려진 상태(입력이 모두 된 상태)라면
+            drawMidpointLine(g, x1, y1, x2, y2);	// 함수 수행해서 선 그리기
+    }
+
+    private void drawMidpointLine(Graphics g, int x1, int y1, int x2, int y2)	// 선 그리기
+    {
+        int dx = x2 - x1;	// x 차
+        int dy = y2 - y1;	// y 차
+        int d = dy - (dx / 2);	// 비교용 d 설정
+        int x = x1, y = y1;	// x, y의 시작점을 설정
+
+        g.fillOval(x, y, 2, 2);
+
+        while (x < x2)	// x가 x2 까지 도달
+        {
+            x++;	// x +1
+            if (d < 0)	// d가 0보다 작으면
+                d = d + dy;	// y값만 추가
+            else 	// d가 0보다 크거나 같으면
+            {
+                d = d + (dy - dx);	// 
+                y++;
+            }
+            g.fillOval(x, y, 2, 2);	// 설정된 x, y좌표 그리기
+        }
+    }
+
+    private void translateLine(int dx, int dy)	// 이동 함수
+    {
+        x1 += dx;	// x1을 dx만큼 이동
+        y1 += dy;	// y1을 dy만큼 이동
+        x2 += dx;	// x2을 dx만큼 이동
+        y2 += dy;	// y2을 dy만큼 이동
+        repaint();	// 이동 후 다시 그려주기
+    }
+
+    public static void main(String[] args) {
+        Frame frame = new Frame("Line Drawing");
+        LineDrawing canvas = new LineDrawing();
+
+        frame.add(canvas);
+        frame.setSize(800, 600);
+        frame.addWindowListener(new WindowAdapter() 
+        {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        
+        frame.setVisible(true);
+    }
+}
